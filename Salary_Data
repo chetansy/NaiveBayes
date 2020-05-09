@@ -1,0 +1,55 @@
+library(e1071)
+library(ggplot2)
+
+## Read Data
+sal_train<- read.csv(file.choose())
+sal_test<- read.csv(file.choose())
+
+sal_train$educationno <- as.factor(sal_train$educationno)
+str(sal_train$educationno)
+
+sal_test$educationno <- as.factor(sal_test$educationno)
+
+## Visualization
+##salary vs age
+ggplot(data=sal_train,aes(x=sal_train$Salary, y = sal_train$age, fill = sal_train$Salary)) +
+  geom_boxplot() +
+  ggtitle("Box Plot")
+
+##salary vs capitalgain
+ggplot(data=sal_train,aes(x=Salary, y =capitalgain, fill = Salary)) +
+  geom_boxplot() +
+  ggtitle("Box Plot")
+
+##salary vs capitalloss
+ggplot(data=sal_train,aes(x=Salary, y =capitalloss, fill = Salary)) +
+  geom_boxplot() +
+  ggtitle("Box Plot")
+
+##salary vs HoursPerWeek
+ggplot(data=sal_train,aes(x=Salary, y =hoursperweek, fill = Salary)) +
+  geom_boxplot() +
+  ggtitle("Box Plot")
+
+## Model Building
+# Naive Bayes Model 
+model <- naiveBayes(Salary ~ ., data = sal_train)
+model
+
+model_pred <- predict(model,sal_test)
+mean(model_pred==sal_test$Salary)    ## Accuracy = 81.87%
+
+library(caret)
+confusionMatrix(model_pred,sal_test$Salary)
+
+##improving model performance
+
+model_2 <- naiveBayes(Salary ~ ., data = sal_train,laplace = 1)
+model_2
+
+model_pred_2<- predict(model_2,sal_test)
+model_pred_2
+mean(model_pred_2 == sal_test$Salary) ## Accuracy = 81.85%
+
+## as accuracy is lower than above model 
+##so we take final model as model 1
